@@ -539,3 +539,4 @@ Within the Noibu dashboard, teams can:
 - Filter and analyze specific user journeys
 
 By combining automatic interaction capture with explicit screen and action tagging, Noibu provides a clear and actionable view of real user behavior.
+
