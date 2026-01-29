@@ -9,7 +9,8 @@
 ## 2. Initialization
 2.1 Basic Initialization  
 2.2 Initialization in a SwiftUI App  
-2.3 Checking Initialization Status  
+2.3 SDK Options & Configuration Flags
+2.4 Checking Initialization Status
 
 ## 3. Session Replay & User Interactions
 3.1 How Session Replay Works  
@@ -180,33 +181,32 @@ The Noibu iOS SDK exposes a minimal and simple public API.
 Initialization must occur as early as possible in your app’s lifecycle to ensure full session capture and error monitoring.
 
 The public API consists of:
-- `Noibu.shared.initialize()` — Starts the SDK
+- `Noibu.shared.initialize(configuration:)` — Starts the SDK
 - `Noibu.shared.isInitialized` — Returns whether the SDK is currently active
 - `Noibu.shared.addCustomAttribute(name: String, value: String)` - Add a custom attribute
 
 
 ### 2.1 Basic Initialization
 
-To start the SDK, call:
+To start the SDK, create a `NoibuConfig` and pass it into `initialize(configuration:)`.
+
 ```swift
 import NoibuSessionReplay
 
-Noibu.shared.initialize()
-```
+let config = NoibuConfig(
+    domain: "https://mobile.native.noibu.com"
+)
 
-This automatically:
-- Initializes the Datadog Core engine
-- Enables RUM (Real User Monitoring)
-- Enables Session Replay
-- Configures sampling, privacy, and SwiftUI predicates
-- Grants tracking consent by default
+Noibu.shared.initialize(configuration: config)
+```
 
 The SDK handles all internal setup for you.
 No configuration parameters are required at this time.
 
 ### 2.2 Initialization in a SwiftUI App
 
-For SwiftUI applications, the recommended integration point is inside the `init()` of your `@main App`:
+For SwiftUI apps, initialize the SDK inside the `init()` of your `@main App`.
+This ensures the SDK is running before your first view appears.
 
 ```swift
 import SwiftUI
@@ -216,12 +216,19 @@ import NoibuSessionReplay
 struct MyApp: App {
 
     init() {
-        Noibu.shared.initialize()
+        let config = NoibuConfig(
+            domain: "https://mobile.native.noibu.com",
+            sampleRate: 100.0,
+            privacyMode: .maskSensitive
+        )
+
+        Noibu.shared.initialize(configuration: config)
     }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .noibuSessionReplayWrapper()
         }
     }
 }
@@ -229,7 +236,59 @@ struct MyApp: App {
 
 This ensures the SDK is activated before your first view appears, allowing full session replay coverage from the moment the app launches.
 
-### 2.3 Checking Initialization Status
+### 2.3 SDK Options & Configuration Flags
+
+The SDK is configured using `NoibuConfig`.
+
+```swift
+public struct NoibuConfig {
+    public let domain: String
+    public let environment: String
+    public let sampleRate: Double
+    public let privacyMode: NoibuPrivacy
+    public let firstPartyHosts: [String]
+}
+```
+
+#### domain (required)
+This value must match the Noibu environment your project is configured for.
+Using an incorrect domain may result in sessions not appearing in the dashboard.
+
+#### environment (optional, default: "test")
+A string label used to separate environments (e.g. production, staging, development, test).
+
+#### sampleRate (optional, default: 100.0)
+Controls sampling for session replay collection.
+- 100.0 = capture 100% of sessions
+- 50.0 = capture ~50% of sessions
+-  0.0 = disable replay collection
+
+#### privacyMode (optional, default: .maskSensitive)
+Controls how the SDK handles sensitive UI data.
+
+Available values:
+- .maskAll — mask all text and inputs
+- .maskSensitive — mask sensitive inputs (recommended default)
+- .allowAll — allow full text capture (use with caution)
+
+#### firstPartyHosts (optional, default: [])
+An optional list of first-party hostnames used for internal classification and processing.
+
+#### Full configuration example
+
+```swift
+let config = NoibuConfig(
+    domain: "https://mobile.native.noibu.com",
+    environment: "staging",
+    sampleRate: 50.0,
+    privacyMode: .maskSensitive,
+    firstPartyHosts: ["api.noibu.test"]
+)
+
+Noibu.shared.initialize(configuration: config)
+```
+
+### 2.4 Checking Initialization Status
 
 You can check whether the SDK is currently active by reading:
 
@@ -272,7 +331,8 @@ To capture navigation and screen transitions correctly, wrap your root view:
 @main
 struct MyApp: App {
     init() {
-        Noibu.shared.initialize()
+        let config = NoibuConfig(domain: "https://mobile.native.noibu.com")
+        Noibu.shared.initialize(configuration: config)
     }
 
     var body: some Scene {
@@ -362,6 +422,9 @@ Button(action: {
 ### 3.6 Custom Attributes
 Custom Attributes allow you to attach business and application context to a user session.
 They are useful for enriching session replays with information that is not automatically captured by the SDK.
+
+Custom Attributes describe **session context**, not individual events.
+They should change infrequently and represent high-level state.
 
 Common use cases include:
 - Feature flags
