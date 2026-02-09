@@ -15,11 +15,11 @@
 ## 3. Session Replay & User Interactions
 3.1 How Session Replay Works  
 3.2 Automatically Captured Data  
-3.3 Tracking Screens  
+3.3 Tracking Screens
 3.4 Tracking User Actions
-3.5 Custom Attributes 
-3.6 Naming Best Practices  
-3.7 Performance Considerations  
+3.5 Custom Attributes
+3.6 Naming Best Practices
+3.7 Performance Considerations
 3.8 Analyzing Sessions in Noibu 
 
 
@@ -513,3 +513,4 @@ Within the Noibu dashboard, teams can:
 - Filter and analyze specific user journeys
 
 By combining automatic interaction capture with explicit screen and action tagging, Noibu provides a clear and actionable view of real user behavior.
+
