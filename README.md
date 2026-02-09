@@ -9,19 +9,18 @@
 ## 2. Initialization
 2.1 Basic Initialization  
 2.2 Initialization in a SwiftUI App  
-2.3 SDK Options & Configuration Flags   
+2.3 SDK Options & Configuration Flags
 2.4 Checking Initialization Status
 
 ## 3. Session Replay & User Interactions
 3.1 How Session Replay Works  
-3.2 Required Root View Wrapper  
-3.3 Automatically Captured Data  
-3.4 Tracking Screens  
-3.5 Tracking User Actions
-3.6 Custom Attributes 
-3.7 Naming Best Practices  
-3.8 Performance Considerations  
-3.9 Analyzing Sessions in Noibu 
+3.2 Automatically Captured Data  
+3.3 Tracking Screens  
+3.4 Tracking User Actions
+3.5 Custom Attributes 
+3.6 Naming Best Practices  
+3.7 Performance Considerations  
+3.8 Analyzing Sessions in Noibu 
 
 
 - [1. Installation](#1-installation)  
@@ -319,32 +318,7 @@ Once the SDK is initialized and the root view is wrapped:
 
 No additional configuration is required.
 
-### 3.2 Required Root View Wrapper
-
-To capture navigation and screen transitions correctly, wrap your root view:
-```swift
-.noibuSessionReplayWrapper()
-```
-
-**Example:**
-```swift
-@main
-struct MyApp: App {
-    init() {
-        let config = NoibuConfig(domain: "https://mobile.native.noibu.com")
-        Noibu.shared.initialize(configuration: config)
-    }
-
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-                .noibuSessionReplayWrapper()
-        }
-    }
-}
-```
-
-### 3.3 Automatically Captured Data
+### 3.2 Automatically Captured Data
 
 Once the SDK is initialized and the root view is wrapped, the following data is captured automatically without any additional instrumentation:
 
@@ -365,7 +339,7 @@ Once the SDK is initialized and the root view is wrapped, the following data is 
 
 Everything listed above is captured automatically. Developers do not need to add identifiers, tags, or annotations for these events.
 
-### 3.4 Tracking Screens
+### 3.3 Tracking Screens
 
 In addition to automatic screen tracking, developers may explicitly label important screens using:
 ```swift
@@ -389,7 +363,7 @@ var body: some View {
 
 This will give the replay viewer a clear, human-readable screen name that appears in the session timeline.
 
-### 3.5 Tracking User Actions
+### 3.4 Tracking User Actions
 
 Although many interactions are captured automatically, developers can explicitly annotate meaningful user actions using the `.trackTapAction(name:)` view modifier.
 ```swift
@@ -419,7 +393,7 @@ Button(action: {
 .trackTapAction(name: "Toggle content button")
 ```
 
-### 3.6 Custom Attributes
+### 3.5 Custom Attributes
 Custom Attributes allow you to attach business and application context to a user session.
 They are useful for enriching session replays with information that is not automatically captured by the SDK.
 
@@ -435,7 +409,7 @@ Common use cases include:
 
 Custom Attributes are associated with the current session and can be used to add context, filter sessions, and improve debugging in the Noibu dashboard.
 
-#### 3.6.1 Adding a Custom Attribute
+#### 3.5.1 Adding a Custom Attribute
 Custom Attributes can be added at any point after the SDK has been initialized using the following API:
 ```swift
 Noibu.shared.addCustomAttribute(name: String, value: String)
@@ -449,7 +423,7 @@ Noibu.shared.addCustomAttribute(
 ```
 If the SDK is not initialized or the attribute fails validation, the attribute will be ignored.
 
-#### 3.6.2 Recommended Usage Patterns
+#### 3.5.2 Recommended Usage Patterns
 
 Custom Attributes should be added at meaningful points in the app lifecycle where they provide useful session context.
 
@@ -492,7 +466,7 @@ Button(action: {
 .trackTapAction(name: "Toggle content button")
 ```
 
-#### 3.6.3 Limits & Validation
+#### 3.5.3 Limits & Validation
 
 The Noibu iOS SDK enforces the following validation rules for Custom Attributes:
 - A maximum of 10 custom attributes per session
@@ -503,7 +477,7 @@ The Noibu iOS SDK enforces the following validation rules for Custom Attributes:
 
 If any of these rules are violated, the attribute will be ignored and will not be associated with the session.
 
-### 3.7 Naming Best Practices
+### 3.6 Naming Best Practices
 
 When naming screens and actions, follow these guidelines to keep replays easy to understand:
 
@@ -514,7 +488,7 @@ When naming screens and actions, follow these guidelines to keep replays easy to
 
 Good naming improves collaboration between developers, QA, and product teams when reviewing session replays.
 
-### 3.8 Performance Considerations
+### 3.7 Performance Considerations
 
 The Noibu iOS SDK is optimized to ensure minimal impact on app performance while recording session replay data. Key optimizations include:
 
@@ -526,7 +500,7 @@ The Noibu iOS SDK is optimized to ensure minimal impact on app performance while
 
 These behaviors ensure that session replay has negligible overhead on modern devices and remains fully transparent to end users.
 
-### 3.9 Analyzing Sessions in Noibu
+### 3.8 Analyzing Sessions in Noibu
 
 All captured and custom-tracked screens and actions are displayed in the Noibu session replay timeline.
 
@@ -539,5 +513,3 @@ Within the Noibu dashboard, teams can:
 - Filter and analyze specific user journeys
 
 By combining automatic interaction capture with explicit screen and action tagging, Noibu provides a clear and actionable view of real user behavior.
-
-
